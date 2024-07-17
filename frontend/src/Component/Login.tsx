@@ -46,7 +46,7 @@ const Login = () => {
       dispatch(userLoginAction(values))
         .then(({ payload }: any) => {
           console.log("payload", payload);
-          console.log("Payload Getting", payload.data.data.token);
+          console.log("Payload Getting", payload?.data?.data?.token);
           const user=JSON.stringify(payload.data.data.user)
           if (payload.status === 200) {
             dispatch(setAuthCurrentUser(payload.data.data.token));

@@ -16,8 +16,8 @@ const initialState: PostState = {
   isLoading: false,
   isError: false,
   postData: null,
-  selectedPostComments : null,
-  ownComment:null
+  selectedPostComments: null,
+  ownComment: null,
 };
 
 const postSlice = createSlice({
@@ -27,9 +27,11 @@ const postSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(postADetails.fulfilled, (state, { payload }) => {
+        console.log("Payload Middleware=========>", payload);
+
         state.isLoading = false;
         state.isError = false;
-        state.postData = payload?.data;
+        state.postData = payload?.newResponse;
       })
       .addCase(postADetails.pending, (state, { payload }) => {
         state.isLoading = true;
@@ -42,8 +44,8 @@ const postSlice = createSlice({
 
       // Get a Post
       .addCase(getPostAction.fulfilled, (state, { payload }) => {
-        console.log("Payload===========",payload);
-        
+        console.log("Payload===========", payload);
+
         (state.isLoading = false),
           (state.isError = false),
           (state.postData = payload?.data);
@@ -110,10 +112,9 @@ const postSlice = createSlice({
         state.isLoading = false;
       })
       // Delete own comment
-      .addCase(deleteOwnCommentAction.fulfilled,(state,{payload})=>{
-          state.isError=false
-          state.isLoading=false,
-          state.ownComment=payload
+      .addCase(deleteOwnCommentAction.fulfilled, (state, { payload }) => {
+        state.isError = false;
+        (state.isLoading = false), (state.ownComment = payload);
       })
       .addCase(deleteOwnCommentAction.pending, (state, { payload }) => {
         state.isError = false;
@@ -122,7 +123,7 @@ const postSlice = createSlice({
       .addCase(deleteOwnCommentAction.rejected, (state, { payload }) => {
         state.isError = true;
         state.isLoading = false;
-      })
+      });
   },
 });
 

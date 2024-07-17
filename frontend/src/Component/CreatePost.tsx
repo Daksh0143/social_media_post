@@ -1,7 +1,7 @@
 import { Button, Grid, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { green } from "@mui/material/colors";
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -13,7 +13,7 @@ import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
 import { postADetails } from "../redux/post/postMiddleware";
 import { toast } from "react-toastify";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 const CreatePost: FC = () => {
   const initialValues = {
@@ -22,7 +22,7 @@ const CreatePost: FC = () => {
   };
 
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   const { errors, handleBlur, handleChange, handleSubmit, touched, values } =
     useFormik({
@@ -32,12 +32,11 @@ const CreatePost: FC = () => {
         console.log(values, "Values");
         dispatch(postADetails(values))
           ?.then(({ payload }) => {
-            console.log("Values IN Side Dispatch", values);
+            console.log("Values IN Side Dispatch", payload);
             if (payload.status === 200 || payload.status === 201) {
               console.log("Get Payload", payload);
               toast.success("Post posted Successfully");
-              navigate("/")
-              
+              navigate("/");
             }
           })
           .catch((error: any) => {
@@ -46,6 +45,8 @@ const CreatePost: FC = () => {
           });
       },
     });
+
+
   return (
     <Grid container>
       <Grid container justifyContent={"center"} mt={5}>

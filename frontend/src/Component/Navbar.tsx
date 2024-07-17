@@ -13,7 +13,7 @@ const Navbar = () => {
             variant="text"
             color="secondary"
             size="large"    
-            onClick={()=>navigate("/login")}
+            onClick={()=>navigate("/")}
           >
             Login
           </Button>

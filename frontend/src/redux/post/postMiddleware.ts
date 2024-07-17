@@ -32,15 +32,18 @@ interface Comment {
 export const postADetails: AsyncThunk<any, any, {}> = createAsyncThunk<
   any,
   any
->("post/create/post", async (request, { rejectWithValue }) => {
+>("post/create/post", async (request, { rejectWithValue, getState }: any) => {
   try {
-    const response = await createPost(request);
-    console.log("Response", response);
+    let response = await createPost(request);
+    console.log("Response===========>", response);
     if (response?.status === 201 || response?.status === 200) {
       console.log("Response", response);
+      let newArray = await getState()?.Post?.postData;
+      const newResponse = [...newArray, response.data.data];
+      response.newResponse = newResponse;
       return response;
+      // return {};
     }
-    console.log("Rejected With response", response);
     return rejectWithValue(response);
   } catch (error: any) {
     console.log("Errror", error);
