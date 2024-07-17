@@ -3,4 +3,5 @@ export interface PostState {
   postData: any;
   isError: boolean;
   selectedPostComments: any;
+  ownComment:any
 }

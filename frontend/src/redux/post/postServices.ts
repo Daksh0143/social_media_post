@@ -9,6 +9,7 @@ const GetPostUrl = "post/getAll";
 const CommentUrl = "comment";
 const LikeUrl = "like/toggleLike";
 const GetCommentUrl = "comment/getAll";
+const DeleteOwnCommentUrl = "comment/delete";
 
 interface post {
   title: String;
@@ -71,6 +72,18 @@ export const getCommentsByPostIdAsync = async (id: any) => {
     return data;
   } catch (error) {
     console.log("error", error);
+    return error;
+  }
+};
+
+export const deleteOwnCommentAsync = async ({ id, commentId }: any) => {
+  console.log("Id======>", id, commentId);
+  try {
+    const data = await api.delete(`${DeleteOwnCommentUrl}/${id}/${commentId}`);
+    console.log("data", data);
+    return data;
+  } catch (error) {
+    console.log("Error", error);
     return error;
   }
 };

@@ -7,7 +7,8 @@ import {
   getAllPostAsync,
   likeAsync,
   getAllCommentAsync,
-  getCommentsByPostIdAsync
+  getCommentsByPostIdAsync,
+  deleteOwnCommentAsync,
 } from "../post/postServices";
 import { toast } from "react-toastify";
 import { ErrorResponse } from "react-router-dom";
@@ -80,7 +81,6 @@ export const postCommentAction = createAsyncThunk<any, any>(
 
       console.log("Updated Data:", newData);
 
-
       return newData;
     } catch (error) {
       console.log("Error", error);
@@ -120,13 +120,30 @@ export const likeAction = createAsyncThunk<any, any>(
   }
 );
 
-export const getCommentsByPostIdAction=createAsyncThunk<any,any>("/get/comment",async(id,{rejectWithValue})=>{
-  try {
-    const response=await getCommentsByPostIdAsync(id)
-    console.log("Response Getting For All Comment",response)
-    return response
-  } catch (error) {
-    console.log("Error",error)
-    return error
+export const getCommentsByPostIdAction = createAsyncThunk<any, any>(
+  "/get/comment",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await getCommentsByPostIdAsync(id);
+      console.log("Response Getting For All Comment", response);
+      return response;
+    } catch (error) {
+      console.log("Error", error);
+      return error;
+    }
   }
-})
+);
+
+export const deleteOwnCommentAction = createAsyncThunk(
+  "/delete/comment",
+  async (request, { rejectWithValue }) => {
+    try {
+      const response = await deleteOwnCommentAsync(request);
+      console.log("Response", response);
+      return response;
+    } catch (error) {
+      console.log("Error");
+      return error;
+    }
+  }
+);

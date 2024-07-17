@@ -5,7 +5,7 @@ import { userLoginAction, userRegistrationAction } from "./auth.middleware";
 
 const initialState: AuthState = {
   loading: false,
-  currentUser: localStorage.getItem("token"),
+  currentUser: localStorage.getItem("user"),
   isLoading: false,
   isError: false,
   userData: [],

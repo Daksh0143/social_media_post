@@ -8,6 +8,7 @@ const { Types } = require("mongoose");
 
 const postComment = async (req, res) => {
   const postId = req.body.post;
+  // const {postId}=req.params
   console.log("Post id", postId);
   console.log(req.user, "User");
   const user = req.user.id;
@@ -51,12 +52,15 @@ const postComment = async (req, res) => {
 };
 
 const deleteComment = async (req, res) => {
-  const { postId } = req.params;
-  const userId = req.user.user.id;
+  const {postId,commentId} = req.params;
+  console.log("user",req.user)
+  const userId = req.user.id;
 
   const comment = await Comment.findOneAndDelete({
     post: postId,
+    _id:  commentId
   });
+
   console.log("Comment", comment);
   if (!comment) {
     return failureResponse({
@@ -64,7 +68,7 @@ const deleteComment = async (req, res) => {
       message: "You have not comment on this post",
     });
   }
-  const posts = await Post.findByIdAndUpdate(
+  const posts = await PostModel.findByIdAndUpdate(
     postId,
     {
       $pull: {
@@ -116,7 +120,7 @@ const toggleComment = async (req, res) => {
         post: postId,
       });
       // Update comment into the post
-      const post = await Post.findByIdAndUpdate(postId, {
+      const post = await PostModel.findByIdAndUpdate(postId, {
         $addToSet: { postComment: newComment._id },
       });
 

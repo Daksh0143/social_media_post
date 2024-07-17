@@ -9,7 +9,7 @@ const {
 } = require("../controller/comment.controller");
 
 router.post("/", userAuth, postComment);
-router.post("/delete/:postId", userAuth, deleteComment);
+router.delete("/delete/:postId/:commentId", userAuth, deleteComment);
 router.post("/toggle-comment/:postId", userAuth, toggleComment);
 router.get("/getAll/:postId",getAllComment)
 

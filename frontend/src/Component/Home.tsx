@@ -30,17 +30,20 @@ import { commentSchema } from "../utills/schema";
 import {
   postCommentAction,
   getCommentAction,
+  deleteOwnCommentAction,
 } from "../redux/post/postMiddleware";
 import { toast } from "react-toastify";
 import { authSelector } from "../redux/auth/auth.slice";
 import { List } from "react-virtualized";
 import InfiniteScroll from "react-infinite-scroll-component";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import { parseUserData } from "../utills/services";
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { currentUser } = useSelector(authSelector);
+  const userData = parseUserData(currentUser);
   const [showTextArea, setShowTextArea] = useState<string | boolean>("");
   const [like, setLike] = useState<any>("");
   const userName: any = JSON.parse(localStorage?.getItem("user") as any);
@@ -48,12 +51,8 @@ const Home = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const { isError, isLoading, postData, selectedPostComments } =
+  const { isError, isLoading, postData, selectedPostComments, ownComment } =
     useSelector(postSelector);
-
-  console.log("Selected Post Comment", selectedPostComments);
-
-  console.log("Post Data", postData);
 
   const { errors, handleChange, handleSubmit, touched, values } = useFormik({
     initialValues: {
@@ -77,7 +76,6 @@ const Home = () => {
       });
     },
   });
-  console.log("selectedPostComments", selectedPostComments);
 
   const handleLike = (id: string) => {
     console.log("Id Like", id);
@@ -100,12 +98,23 @@ const Home = () => {
     }
   };
 
+  const handleDelete = (id: any, commentId: any) => {
+    dispatch(deleteOwnCommentAction({ id, commentId })).then(({ payload }) => {
+      if (payload.status === 200 || payload.status === 201) {
+        console.log("payload=---->", payload);
+        getApi();
+      }
+    });
+  };
+
   const fetchNextComment = (id: string) => {
     if (!hasMore) return;
     dispatch(getCommentsByPostIdAction(id, page));
     setPage(page + 1);
   };
-
+  const getCommentInfo = (id: string) => {
+    return selectedPostComments?.find((item) => item._id === id);
+  };
   const refreshData = () => {
     console.log("sdfgljh");
   };
@@ -116,9 +125,13 @@ const Home = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+  const getApi = () => {
+    console.log(" payload=----> get dataaa");
 
-  useEffect(() => {
     dispatch(getPostAction());
+  };
+  useEffect(() => {
+    getApi();
   }, [dispatch]);
 
   return (
@@ -239,56 +252,50 @@ const Home = () => {
                   xs={12}
                   sx={{ overflowY: "auto", maxHeight: "40dvh" }}
                 >
-                  {/* <InfiniteScroll
-                    dataLength={selectedPostComments?.length | 0}
-                    next={() => fetchNextComment(element._id)}
-                    hasMore={true}
-                    loader={<h4>Loading...</h4>}
-                    style={{ maxHeight: "30dvh" }}
-                  > */}
-                  {selectedPostComments?.map((item: any, index: any) => (
-                    <ListItem>
-                      <ListItemText>{item?.content} vfbkjh</ListItemText>
+                  {/* {JSON.stringify(element)} */}
+                  {element?.postComment?.map((item: any, index: any) => {
+                    const commentInfo = getCommentInfo(item);
+
+                    return (
+                      <ListItem key={index}>
+                        <ListItemText>{commentInfo?.content} </ListItemText>
+                        <ListItemText>
+                          {commentInfo?.createdAt?.substring(0, 10)}
+                          sdfpoijukjh
+                        </ListItemText>
+                        {/* {JSON.stringify(userData)} */}
+                        {/* {JSON.stringify(item._id)} */}
+                        {commentInfo?.user === userData?._id ? (
+                          <Button
+                            onClick={() =>
+                              handleDelete(element._id, commentInfo._id)
+                            }
+                            variant="contained"
+                          >
+                            {" "}
+                            Delete Button
+                          </Button>
+                        ) : null}
+                      </ListItem>
+                    );
+                  })}
+                  {/* {selectedPostComments?.map((item: any, index: any) => (
+                    <ListItem key={index}>
+                      <ListItemText>{item?.content} </ListItemText>
                       <ListItemText>
                         {item?.createdAt.substring(0, 10)}
                       </ListItemText>
+                      {item.user === userData?._id ? (
+                        <Button
+                          onClick={() => handleDelete(element._id, item._id)}
+                          variant="contained"
+                        >
+                          {" "}
+                          Delete Button
+                        </Button>
+                      ) : null}
                     </ListItem>
-                  ))}
-                  {/* </InfiniteScroll> */}
-                  {/* <InfiniteScroll
-                    dataLength={selectedPostComments?.length || 1} //This is important field to render the next data
-                    next={() => fetchNextComment(element._id)}
-                    hasMore={true}
-                    loader={<h4>Loading...</h4>}
-                    endMessage={
-                      <p style={{ textAlign: "center" }}>
-                        <b>Yay! You have seen it all</b>
-                      </p>
-                    }
-                    // below props only if you need pull down functionality
-                    refreshFunction={refreshData}
-                    pullDownToRefresh
-                    pullDownToRefreshThreshold={10}
-                    pullDownToRefreshContent={
-                      <h3 style={{ textAlign: "center" }}>
-                        &#8595; Pull down to refresh
-                      </h3>
-                    }
-                    releaseToRefreshContent={
-                      <h3 style={{ textAlign: "center" }}>
-                        &#8593; Release to refresh
-                      </h3>
-                    }
-                  >
-                    {selectedPostComments?.map((item: any, index: any) => (
-                      <ListItem>
-                        <ListItemText>{item?.content} vfbkjh</ListItemText>
-                        <ListItemText>
-                          {item?.createdAt.substring(0, 10)}
-                        </ListItemText>
-                      </ListItem>
-                    ))}
-                  </InfiniteScroll> */}
+                  ))}} */}
                 </Grid>
 
                 <Grid
